@@ -1,0 +1,51 @@
+#!/bin/bash
+
+# If WiFi is connected, show the WiFi symbol as green.
+# If it's disconnected, show it as red. If dormannt, as yellow.
+
+HOST=$(hostname)
+
+if [[ "$HOST" == "x1carbon" ]]; then
+        WIFI=wlp3s0
+elif [[ "$HOST" == "m73" ]]; then
+        WIFI=wlan0
+fi
+
+if ! [ -f /sys/class/net/$WIFI/operstate ]; then
+        exit 0
+fi
+wlan_state="$(cat /sys/class/net/$WIFI/operstate)"
+
+if [[ $BLOCK_BUTTON == '1' ]]; then
+        gnome-control-center network
+fi
+
+if [[ $BLOCK_BUTTON == '3' ]]; then
+        SSID=`sudo iwconfig wlp3s0 | grep ESSID | cut -d '"' -f2 | cut -d '"' -f1`
+        FREQ=`sudo iwconfig wlp3s0 | grep Frequency | cut -d 'G' -f1 | cut -d ':' -f3`
+        LOCAL_IP=`sudo ifconfig | sed -En 's/127.0.0.1//;s/.*inet (addr:)?(([0-9]*\.){3}[0-9]*).*/\2/p'`
+
+        echo "$SSID" "$FREQ" "$LOCAL_IP"
+        notify-send "`echo -e "$SSID" "\n" $FREQ " GHz " $LOCAL_IP`" \
+                -i /usr/share/icons/Numix-Circle/48/apps/networkmanager.svg
+fi
+if [[ $BLOCK_BUTTON == '4' ]] | [[ $BLOCK_BUTTON == '5' ]]; then
+        notify-send "`echo $(macchanger $WIFI -s)`" \
+                -i /usr/share/icons/Numix-Circle/48/apps/networkmanager.svg
+fi
+
+if [ "$wlan_state" = "up" ]; then
+        echo ""
+        echo ""
+        exit 0
+elif [ "$wlan_state" = "down" ]; then
+        echo ""
+        echo ""
+        echo "#DC322F"
+        exit 0
+elif [ "$wlan_state" = "dormant" ]; then
+        echo ""
+        echo ""
+        echo "#F99157"
+        exit 0
+fi

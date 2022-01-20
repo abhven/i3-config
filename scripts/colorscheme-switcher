@@ -1,0 +1,45 @@
+#!/bin/zsh
+
+# Things that need to change color:
+# - i3 bar
+# - urxvt
+# - vim
+# - prompt
+# - Rprofile
+# - dunst
+
+# Change urxvt and vim using base16-shell:
+sh ~/.config/base16-shell/scripts/base16-$1.sh
+rm ~/.base16_theme
+cp ~/.config/base16-shell/scripts/base16-$1.sh ~/.base16_theme
+XRESOURCES=~/.config/base16-xresources/xresources/base16-$1-256.Xresources
+cp $XRESOURCES ~/.Xresources
+xrdb -merge $XRESOURCES
+
+# Change dunst
+sed -i '/base16/,$d' ~/.config/dunst/dunstrc
+cat ~/.config/base16-dunst/themes/base16-$1.dunstrc >> ~/.config/dunst/dunstrc
+pkill dunst
+
+# Change i3:
+bash ~/.i3/scripts/i3-colorscheme-switcher $1
+
+echo "base00="`cat $XRESOURCES | grep base00 | head -1 | cut -d ' ' -f 3` > ~/.colors
+echo "base01="`cat $XRESOURCES | grep base01 | head -1 | cut -d ' ' -f 3` >> ~/.colors
+echo "base02="`cat $XRESOURCES | grep base02 | head -1 | cut -d ' ' -f 3` >> ~/.colors
+echo "base03="`cat $XRESOURCES | grep base03 | head -1 | cut -d ' ' -f 3` >> ~/.colors
+echo "base04="`cat $XRESOURCES | grep base04 | head -1 | cut -d ' ' -f 3` >> ~/.colors
+echo "base05="`cat $XRESOURCES | grep base05 | head -1 | cut -d ' ' -f 3` >> ~/.colors
+echo "base06="`cat $XRESOURCES | grep base06 | head -1 | cut -d ' ' -f 3` >> ~/.colors
+echo "base07="`cat $XRESOURCES | grep base07 | head -1 | cut -d ' ' -f 3` >> ~/.colors
+echo "base08="`cat $XRESOURCES | grep base08 | head -1 | cut -d ' ' -f 3` >> ~/.colors
+echo "base09="`cat $XRESOURCES | grep base09 | head -1 | cut -d ' ' -f 3` >> ~/.colors
+echo "base0A="`cat $XRESOURCES | grep base0A | head -1 | cut -d ' ' -f 3` >> ~/.colors
+echo "base0B="`cat $XRESOURCES | grep base0B | head -1 | cut -d ' ' -f 3` >> ~/.colors
+echo "base0C="`cat $XRESOURCES | grep base0C | head -1 | cut -d ' ' -f 3` >> ~/.colors
+echo "base0D="`cat $XRESOURCES | grep base0D | head -1 | cut -d ' ' -f 3` >> ~/.colors
+echo "base0E="`cat $XRESOURCES | grep base0E | head -1 | cut -d ' ' -f 3` >> ~/.colors
+echo "base0F="`cat $XRESOURCES | grep base0F | head -1 | cut -d ' ' -f 3` >> ~/.colors
+
+# Keep track of the current theme:
+echo $1 > ~/.config/colorscheme
